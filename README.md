@@ -82,3 +82,8 @@ Product Insights.
 Basket Analysis.
 
 📊 Customer Segmentation & Insights.twbx
+
+I've published my Tableau workbook. You can view the interactive dashboard here:
+
+[View Tableau Dashboard](https://public.tableau.com/views/CustomerSegmentationInsights_17564342118620/Dashboard1?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link)
+
