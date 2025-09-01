@@ -1,14 +1,17 @@
 🛒 Customer Segmentation for E-commerce Business
 
 📌 Project Overview
+
 This project analyzes an online retail dataset to identify key customer segments using RFM (Recency, Frequency, Monetary) analysis. The goal is to help the business understand customer behavior, identify high-value customers, and support data-driven marketing strategies.
 
 📌 Dataset
+
 Online Retail Dataset (Kaggle)
 ~540,000 transactions (2010 - 2011)
 InvoiceNo, StockCode, Description, Quantity, InvoiceDate, UnitPrice, CustomerID, Country
 
 📌 Skills & Tools
+
 Python: pandas, matplotlib, seaborn, mlxtend
 SQL: SQLite for data queries
 Tableau: Interactive dashboards for visualization
