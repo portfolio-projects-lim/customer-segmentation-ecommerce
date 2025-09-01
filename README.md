@@ -15,6 +15,7 @@ Tableau: Interactive dashboards for visualization
 Excel: Data cleaning and quick analysis
 
 🪜 Project Steps
+
 1️⃣ Data Cleaning
 Removed duplicates, negative quantities, missing InvoiceNo, cancellation (if any)
 Filled missing Description with those rows with the same StockCode
