@@ -38,8 +38,6 @@ Checked for Description consistency (Align StockCode which have more than one De
 
 Created new column, TotalPrice = Quantity * UnitPrice.
 
-Saved the cleaned file back to Excel.
-
 📈 Raw Downloaded Excel file: online_retail.csv
 
 📈 Cleaned Excel file: filtered_data_online_retail.csv
