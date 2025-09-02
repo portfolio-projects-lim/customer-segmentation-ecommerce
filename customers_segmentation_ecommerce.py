@@ -63,7 +63,7 @@ df['Description_original'] = df['Description']
 df['Description'] = df['StockCode'].map(mode_desc)
 
 # Save the cleaned data back to excel
-df.to_excel('filtered_data_online_retail.csv', index=False)
+df.to_excel('filtered_data_online_retail.xlsx', index=False)
 
 ############ EDA ##############
 df['InvoiceDate'] = pd.to_datetime(df['InvoiceDate'],errors="coerce")
@@ -105,4 +105,78 @@ plt.show()
 # To show the top 20 Customer Order Frequency
 order_freq = df.groupby('CustomerID')['InvoiceNo'].nunique().sort_values(ascending=False).head(20)
 order_freq.plot(kind='bar',figsize=(12,6),title="Distribution Customer Order Frequency",ylabel="Number of Orders")
+plt.show()
+
+######### RFM #############
+# Force InvoiceDate into datetime
+df['InvoiceDate'] = pd.to_datetime(df['InvoiceDate'], errors='coerce')
+
+# Check the type again, expected output: datetime64[ns]
+print(df['InvoiceDate'].dtype)
+
+reference_date = df['InvoiceDate'].max()
+print("Reference date:", reference_date, type(reference_date))
+
+rfm = df.groupby('CustomerID').agg({
+    'InvoiceDate': lambda x: (reference_date - x.max()).days,  # Recency
+    'InvoiceNo': 'nunique',                                   # Frequency
+    'TotalPrice': 'sum'                                      # Monetary
+}).reset_index()
+
+rfm.columns = ['CustomerID', 'Recency', 'Frequency', 'Monetary']
+print(rfm.head())
+
+# Recency: lower = better (so we invert the scoring)
+rfm['R_Score'] = pd.qcut(rfm['Recency'], 5, labels=[5,4,3,2,1]).astype(int)
+
+# Frequency & Monetary: higher = better
+rfm['F_Score'] = pd.qcut(rfm['Frequency'], 5, labels=[1,2,3,4],duplicates='drop').astype(int)
+rfm['M_Score'] = pd.qcut(rfm['Monetary'], 5, labels=[1,2,3,4,5]).astype(int)
+
+# Combine into RFM_Segment and RFM_Score
+rfm['RFM_Segment'] = rfm['R_Score'].astype(str) + rfm['F_Score'].astype(str) + rfm['M_Score'].astype(str)
+rfm['RFM_Score'] = rfm[['R_Score','F_Score','M_Score']].sum(axis=1)
+
+def segment_customer(df):
+    if df['RFM_Score'] >= 12:
+        return 'Champions'
+    elif df['RFM_Score'] >= 9:
+        return 'Loyal Customers'
+    elif df['RFM_Score'] >= 6:
+        return 'Potential Loyalists'
+    elif df['RFM_Score'] >= 4:
+        return 'At Risk'
+    else:
+        return 'Lost'
+
+rfm['Segment'] = rfm.apply(segment_customer, axis=1)
+
+rfm['Segment'].value_counts().plot(kind='bar', title="Customer Segments")
+plt.show()
+
+
+output_file = "RFM_Segmentation.xlsx"
+
+# Export to Excel
+rfm.to_excel(output_file, index=False)
+
+print(f"RFM segmentation with scores saved to {output_file}")
+
+
+########## Deep Dive Champions ############
+champions = rfm[rfm['Segment'] == 'Champions']
+print("Number of Champions:", champions['CustomerID'].nunique())
+
+champion_data = df[df['CustomerID'].isin(champions['CustomerID'])]
+
+top_champ_products = champion_data.groupby('Description')['TotalPrice'].sum().sort_values(ascending=False).head(10)
+print(top_champ_products)
+
+top_champ_products.plot(kind='barh', figsize=(10,6), title="Top 10 Products Purchased by Champions")
+plt.show()
+
+champion_data['InvoiceMonth'] = champion_data['InvoiceDate'].dt.to_period('M')
+monthly_champ_sales = champion_data.groupby('InvoiceMonth')['TotalPrice'].sum()
+
+monthly_champ_sales.plot(kind='line', figsize=(12,6), title="Champions' Spending Trend Over Time")
 plt.show()
