@@ -130,7 +130,7 @@ print(rfm.head())
 rfm['R_Score'] = pd.qcut(rfm['Recency'], 5, labels=[5,4,3,2,1]).astype(int)
 
 # Frequency & Monetary: higher = better
-rfm['F_Score'] = pd.qcut(rfm['Frequency'], 5, labels=[1,2,3,4],duplicates='drop').astype(int)
+rfm['F_Score'] = pd.qcut(rfm['Frequency'], 4, labels=[1,2,3,4],duplicates='drop').astype(int)
 rfm['M_Score'] = pd.qcut(rfm['Monetary'], 5, labels=[1,2,3,4,5]).astype(int)
 
 # Combine into RFM_Segment and RFM_Score
@@ -180,3 +180,4 @@ monthly_champ_sales = champion_data.groupby('InvoiceMonth')['TotalPrice'].sum()
 
 monthly_champ_sales.plot(kind='line', figsize=(12,6), title="Champions' Spending Trend Over Time")
 plt.show()
+
